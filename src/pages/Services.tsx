@@ -28,6 +28,41 @@ const Services: React.FC = () => {
 
   const toast = useToast();
 
+  // Mapping tên category từ API sang tên hiển thị
+  const getCategoryDisplayName = (category: string | undefined) => {
+    if (!category) return 'Khác';
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('facebook') || categoryLower.includes('fb')) return 'Facebook';
+    if (categoryLower.includes('instagram') || categoryLower.includes('ig')) return 'Instagram';
+    if (categoryLower.includes('youtube') || categoryLower.includes('yt')) return 'YouTube';
+    if (categoryLower.includes('tiktok') || categoryLower.includes('tt')) return 'TikTok';
+    if (categoryLower.includes('twitter') || categoryLower.includes('x')) return 'Twitter';
+    
+    return category;
+  };
+
+  const getCategoryIcon = (category: string | undefined) => {
+    if (!category) return '🔗';
+    const categoryLower = category.toLowerCase();
+    
+    if (categoryLower.includes('facebook') || categoryLower.includes('fb')) return '📘';
+    if (categoryLower.includes('instagram') || categoryLower.includes('ig')) return '📷';
+    if (categoryLower.includes('youtube') || categoryLower.includes('yt')) return '📺';
+    if (categoryLower.includes('tiktok') || categoryLower.includes('tt')) return '🎵';
+    if (categoryLower.includes('twitter') || categoryLower.includes('x')) return '🐦';
+    
+    return '🔗';
+  };
+
+  const formatPrice = (rate: string) => {
+    const price = parseFloat(rate);
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(price);
+  };
+
   useEffect(() => {
     fetchServices();
   }, []);
@@ -37,6 +72,11 @@ const Services: React.FC = () => {
       setLoading(true);
       const data = await serviceService.getServices();
       setServices(data);
+      
+      // Debug: Log tất cả categories để xem API trả về gì
+      const allCategories = Array.from(new Set(data.map(s => s.category).filter(Boolean)));
+      console.log('All categories from API:', allCategories);
+      
     } catch (err: any) {
       const msg = err.response?.data?.error || err.message || 'Không thể tải danh sách dịch vụ. Vui lòng thử lại sau.';
       setError(msg);
@@ -48,39 +88,15 @@ const Services: React.FC = () => {
   };
 
   const filteredServices = services.filter(service => {
-    const categoryMatch = selectedCategory === 'all' || (service.category && service.category === selectedCategory);
-    const searchMatch = searchTerm === '' || (service.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    const categoryMatch = selectedCategory === 'all' || 
+                         (service.category && getCategoryDisplayName(service.category) === selectedCategory);
+    const searchMatch = searchTerm === '' || 
+                       (service.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
                        (service.category?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     return categoryMatch && searchMatch;
   });
 
-  const categories = ['all', ...Array.from(new Set(services.map(s => s.category).filter(Boolean)))];
-
-  const formatPrice = (rate: string) => {
-    const price = parseFloat(rate);
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price);
-  };
-
-  const getCategoryIcon = (category: string | undefined) => {
-    if (!category) return '🔗';
-    switch (category.toLowerCase()) {
-      case 'facebook':
-        return '📘';
-      case 'instagram':
-        return '📷';
-      case 'youtube':
-        return '📺';
-      case 'tiktok':
-        return '🎵';
-      case 'twitter':
-        return '🐦';
-      default:
-        return '🔗';
-    }
-  };
+  const categories = ['all', ...Array.from(new Set(services.map(s => getCategoryDisplayName(s.category)).filter(Boolean)))];
 
   // Gom nhóm dịch vụ theo tên chính (ví dụ: Tăng Follow TikTok)
   const groupServices = (servicesToGroup: Service[]) => {
