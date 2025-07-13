@@ -24,7 +24,6 @@ import { ToastProvider } from './components/ToastContext';
 
 const Navigation = () => {
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const navItems = [
     { name: 'Trang chủ', href: '/', icon: HomeIcon },
