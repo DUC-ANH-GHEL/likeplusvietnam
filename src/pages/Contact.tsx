@@ -197,8 +197,8 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Điện thoại</h4>
-                    <p className="text-gray-600">1900-xxxx</p>
-                    <p className="text-gray-600">+84 123 456 789</p>
+                    <a href="tel:1900xxxx" className="text-blue-600 hover:underline block">1900-xxxx</a>
+                    <a href="tel:+84123456789" className="text-blue-600 hover:underline block">+84 123 456 789</a>
                   </div>
                 </div>
 
@@ -208,8 +208,38 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Email</h4>
-                    <p className="text-gray-600">support@likeplus.vn</p>
-                    <p className="text-gray-600">info@likeplus.vn</p>
+                    <a href="mailto:support@likeplus.vn" className="text-blue-600 hover:underline block">support@likeplus.vn</a>
+                    <a href="mailto:info@likeplus.vn" className="text-blue-600 hover:underline block">info@likeplus.vn</a>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.6 0 0 .6 0 1.326v21.348C0 23.4.6 24 1.326 24h11.495v-9.294H9.692v-3.622h3.129V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.4 24 24 23.4 24 22.674V1.326C24 .6 23.4 0 22.675 0"/></svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Facebook</h4>
+                    <a href="https://facebook.com/likeplusvn" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block">facebook.com/likeplusvn</a>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-black rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c-5.421 0-9.837 4.416-9.837 9.837 0 4.991 3.657 9.128 8.438 9.877v-6.987h-2.54v-2.89h2.54v-2.205c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.261c-1.242 0-1.631.771-1.631 1.562v1.878h2.773l-.443 2.89h-2.33v6.987c4.781-.749 8.438-4.886 8.438-9.877 0-5.421-4.416-9.837-9.837-9.837z"/></svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">TikTok</h4>
+                    <a href="https://tiktok.com/@likeplusvn" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block">tiktok.com/@likeplusvn</a>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-blue-400 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 32 32"><path d="M16 3C9.373 3 4 8.373 4 15c0 6.627 5.373 12 12 12s12-5.373 12-12c0-6.627-5.373-12-12-12zm0 22c-5.523 0-10-4.477-10-10S10.477 5 16 5s10 4.477 10 10-4.477 10-10 10zm-1-15h2v6h-2zm0 8h2v2h-2z"/></svg>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Zalo</h4>
+                    <a href="https://zalo.me/123456789" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block">zalo.me/123456789</a>
                   </div>
                 </div>
 

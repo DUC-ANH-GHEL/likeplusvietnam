@@ -8,6 +8,7 @@ export interface Service {
   rate: string;
   min: number;
   max: number;
+  description?: string;
   dripfeed?: boolean;
   refill?: boolean;
   cancel?: boolean;
