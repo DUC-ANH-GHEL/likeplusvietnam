@@ -12,7 +12,10 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   ArrowRightIcon,
-  SparklesIcon
+  SparklesIcon,
+  FireIcon,
+  StarIcon,
+  RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from '../components/ToastContext';
 
@@ -21,7 +24,6 @@ const Services: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedType, setSelectedType] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const toast = useToast();
@@ -47,14 +49,12 @@ const Services: React.FC = () => {
 
   const filteredServices = services.filter(service => {
     const categoryMatch = selectedCategory === 'all' || (service.category && service.category === selectedCategory);
-    const typeMatch = selectedType === 'all' || (service.type && service.type === selectedType);
-    const searchMatch = (service.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    const searchMatch = searchTerm === '' || (service.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
                        (service.category?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    return categoryMatch && typeMatch && searchMatch;
+    return categoryMatch && searchMatch;
   });
 
   const categories = ['all', ...Array.from(new Set(services.map(s => s.category).filter(Boolean)))];
-  const types = ['all', ...Array.from(new Set(services.map(s => s.type).filter(Boolean)))];
 
   const formatPrice = (rate: string) => {
     const price = parseFloat(rate);
@@ -145,67 +145,78 @@ const Services: React.FC = () => {
           </p>
         </div>
         
-        {/* Filters */}
+        {/* Quick Search */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
           <div className="flex items-center space-x-2 mb-4">
-            <FunnelIcon className="w-5 h-5 text-gray-500" />
-            <h3 className="font-semibold text-gray-900">Bộ lọc tìm kiếm</h3>
+            <MagnifyingGlassIcon className="w-5 h-5 text-blue-600" />
+            <h3 className="font-semibold text-gray-900">Tìm kiếm nhanh</h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
               <input
                 type="text"
-                placeholder="Tìm kiếm dịch vụ..."
+                placeholder="Nhập tên dịch vụ bạn cần..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             
-            {/* Category Filter */}
-            <div>
-              <select 
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'Tất cả danh mục' : category}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            {/* Type Filter */}
-            <div>
-              <select 
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {types.map(type => (
-                  <option key={type} value={type}>
-                    {type === 'all' ? 'Tất cả loại' : type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Clear Filters */}
             <button
               onClick={() => {
                 setSelectedCategory('all');
-                setSelectedType('all');
                 setSearchTerm('');
               }}
-              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium"
+              className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium"
             >
-              Xóa bộ lọc
+              Xóa tìm kiếm
             </button>
+          </div>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
+          <div className="flex items-center space-x-2 mb-4">
+            <FunnelIcon className="w-5 h-5 text-blue-600" />
+            <h3 className="font-semibold text-gray-900">Danh mục dịch vụ</h3>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                  selectedCategory === category
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {category === 'all' ? 'Tất cả' : category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Popular Services Quick Access */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-8 border border-blue-200">
+          <div className="flex items-center space-x-2 mb-4">
+            <FireIcon className="w-5 h-5 text-orange-600" />
+            <h3 className="font-semibold text-gray-900">Dịch vụ phổ biến</h3>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {['Facebook', 'Instagram', 'YouTube', 'TikTok'].map(platform => (
+              <button
+                key={platform}
+                onClick={() => setSelectedCategory(platform)}
+                className="bg-white rounded-xl p-3 text-center hover:shadow-md transition-all duration-200 border border-gray-200"
+              >
+                <div className="text-2xl mb-1">{getCategoryIcon(platform)}</div>
+                <div className="text-sm font-medium text-gray-700">{platform}</div>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -218,6 +229,26 @@ const Services: React.FC = () => {
             Hiển thị {filteredServices.length} / {services.length} dịch vụ
           </div>
         </div>
+
+        {/* Sticky Category Navigation */}
+        {selectedCategory !== 'all' && (
+          <div className="sticky top-20 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 mb-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">{getCategoryIcon(selectedCategory)}</span>
+                <h2 className="text-xl font-bold text-gray-900">
+                  {selectedCategory} - {filteredServices.length} dịch vụ
+                </h2>
+              </div>
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Xem tất cả
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Services Main List */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
