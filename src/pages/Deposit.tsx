@@ -11,7 +11,9 @@ import {
   ArrowRightIcon,
   SparklesIcon,
   ShieldCheckIcon,
-  ClockIcon
+  ClockIcon,
+  QrCodeIcon,
+  CameraIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from '../components/ToastContext';
 
@@ -22,6 +24,8 @@ const Deposit: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showQR, setShowQR] = useState(false);
+  const [qrData, setQrData] = useState<string>('');
   const toast = useToast();
 
   useEffect(() => {
@@ -102,6 +106,45 @@ const Deposit: React.FC = () => {
   };
 
   const quickAmounts = [50000, 100000, 200000, 500000, 1000000];
+
+  // Tạo QR code data dựa trên phương thức và số tiền
+  const generateQRData = (methodId: string, amount: number) => {
+    const baseData = {
+      amount: amount,
+      method: methodId,
+      timestamp: Date.now(),
+      merchant: 'LikePlusVietNam'
+    };
+
+    switch (methodId) {
+      case 'momo':
+        return `momo://transfer?phone=0123456789&amount=${amount}&content=Nap tien LikePlusVietNam`;
+      case 'zalo':
+        return `zalo://transfer?phone=0123456789&amount=${amount}&message=Nap tien LikePlusVietNam`;
+      case 'vnpay':
+        return `https://vnpay.vn/payment?amount=${amount}&merchant=LikePlusVietNam&orderId=${Date.now()}`;
+      case 'bank_transfer':
+        return `bank://transfer?account=123456789&amount=${amount}&content=Nap tien LikePlusVietNam`;
+      default:
+        return JSON.stringify(baseData);
+    }
+  };
+
+  // Cập nhật QR khi thay đổi phương thức hoặc số tiền
+  useEffect(() => {
+    if (selectedMethod && amount > 0) {
+      const qrDataString = generateQRData(selectedMethod, amount);
+      setQrData(qrDataString);
+      setShowQR(true);
+    } else {
+      setShowQR(false);
+    }
+  }, [selectedMethod, amount]);
+
+  // Tạo QR code URL từ data
+  const getQRCodeURL = (data: string) => {
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data)}`;
+  };
 
   return (
     <>
@@ -228,6 +271,41 @@ const Deposit: React.FC = () => {
 
           {/* Summary Section */}
           <div className="space-y-6">
+            {/* QR Code Section */}
+            {showQR && (
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <QrCodeIcon className="w-6 h-6 mr-2 text-blue-600" />
+                  Mã QR Thanh Toán
+                </h3>
+                <div className="text-center">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-4 border border-blue-200">
+                    <img 
+                      src={getQRCodeURL(qrData)} 
+                      alt="QR Code" 
+                      className="mx-auto border-2 border-white rounded-lg shadow-lg"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-sm font-medium text-blue-800">
+                        Quét mã QR bằng ứng dụng {selectedMethod === 'momo' ? 'MoMo' : 
+                                                 selectedMethod === 'zalo' ? 'ZaloPay' : 
+                                                 selectedMethod === 'vnpay' ? 'VNPay' : 'ngân hàng'}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                      <CameraIcon className="w-4 h-4" />
+                      <span>Hoặc chụp ảnh màn hình để thanh toán sau</span>
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      Mã QR sẽ tự động cập nhật khi thay đổi số tiền hoặc phương thức
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Thông tin phí */}
             {selectedMethod && amount > 0 && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
@@ -265,11 +343,11 @@ const Deposit: React.FC = () => {
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold mt-0.5">2</div>
-                  <p>Nhấn "Nạp tiền ngay" để chuyển đến cổng thanh toán</p>
+                  <p>Mã QR sẽ hiển thị tự động - quét bằng ứng dụng tương ứng</p>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold mt-0.5">3</div>
-                  <p>Hoàn tất thanh toán theo hướng dẫn trên cổng thanh toán</p>
+                  <p>Hoặc nhấn "Nạp tiền ngay" để chuyển đến cổng thanh toán</p>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold mt-0.5">4</div>
