@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import paymentService, { PaymentMethod, DepositData } from '../services/paymentService';
+import { generateMoMoQR, generateZaloQR, generateVNPayQR, generateBankQR } from '../config/payment';
+import PaymentInfo from '../components/PaymentInfo';
 import { 
   CreditCardIcon,
   BanknotesIcon,
@@ -118,13 +120,13 @@ const Deposit: React.FC = () => {
 
     switch (methodId) {
       case 'momo':
-        return `momo://transfer?phone=0123456789&amount=${amount}&content=Nap tien LikePlusVietNam`;
+        return generateMoMoQR(amount);
       case 'zalo':
-        return `zalo://transfer?phone=0123456789&amount=${amount}&message=Nap tien LikePlusVietNam`;
+        return generateZaloQR(amount);
       case 'vnpay':
-        return `https://vnpay.vn/payment?amount=${amount}&merchant=LikePlusVietNam&orderId=${Date.now()}`;
+        return generateVNPayQR(amount);
       case 'bank_transfer':
-        return `bank://transfer?account=123456789&amount=${amount}&content=Nap tien LikePlusVietNam`;
+        return generateBankQR(amount);
       default:
         return JSON.stringify(baseData);
     }
@@ -271,8 +273,8 @@ const Deposit: React.FC = () => {
 
           {/* Summary Section */}
           <div className="space-y-6">
-            {/* QR Code Section */}
-            {showQR && (
+            {/* QR Code Section - Ẩn cho MoMo */}
+            {showQR && selectedMethod !== 'momo' && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <QrCodeIcon className="w-6 h-6 mr-2 text-blue-600" />
@@ -289,8 +291,7 @@ const Deposit: React.FC = () => {
                   <div className="space-y-3">
                     <div className="bg-blue-50 rounded-lg p-3">
                       <p className="text-sm font-medium text-blue-800">
-                        Quét mã QR bằng ứng dụng {selectedMethod === 'momo' ? 'MoMo' : 
-                                                 selectedMethod === 'zalo' ? 'ZaloPay' : 
+                        Quét mã QR bằng ứng dụng {selectedMethod === 'zalo' ? 'ZaloPay' : 
                                                  selectedMethod === 'vnpay' ? 'VNPay' : 'ngân hàng'}
                       </p>
                     </div>
@@ -301,6 +302,23 @@ const Deposit: React.FC = () => {
                     <div className="text-xs text-gray-400">
                       Mã QR sẽ tự động cập nhật khi thay đổi số tiền hoặc phương thức
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* MoMo Manual Payment Section */}
+            {showQR && selectedMethod === 'momo' && (
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <span className="text-2xl mr-2">💜</span>
+                  Thanh Toán MoMo
+                </h3>
+                <div className="text-center">
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 mb-4 border border-purple-200">
+                    <div className="text-4xl mb-2">📱</div>
+                    <p className="text-lg font-semibold text-purple-800 mb-2">Thanh toán thủ công qua MoMo</p>
+                    <p className="text-sm text-purple-600">Vui lòng mở ứng dụng MoMo và nhập thông tin bên dưới</p>
                   </div>
                 </div>
               </div>
@@ -328,6 +346,11 @@ const Deposit: React.FC = () => {
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* Thông tin thanh toán chi tiết */}
+            {showQR && selectedMethod !== 'vnpay' && (
+              <PaymentInfo methodId={selectedMethod} amount={amount} />
             )}
 
             {/* Hướng dẫn */}
