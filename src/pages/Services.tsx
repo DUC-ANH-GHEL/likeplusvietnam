@@ -83,9 +83,9 @@ const Services: React.FC = () => {
   };
 
   // Gom nhóm dịch vụ theo tên chính (ví dụ: Tăng Follow TikTok)
-  const groupServices = () => {
+  const groupServices = (servicesToGroup: Service[]) => {
     const groups: { [key: string]: Service[] } = {};
-    services.forEach(service => {
+    servicesToGroup.forEach(service => {
       const mainName = service.name?.split(' - ')[0]?.trim() || 'Dịch vụ khác';
       if (!groups[mainName]) groups[mainName] = [];
       groups[mainName].push(service);
@@ -93,7 +93,7 @@ const Services: React.FC = () => {
     return groups;
   };
 
-  const serviceGroups = groupServices();
+  const serviceGroups = groupServices(filteredServices);
 
   if (loading) {
     return (
